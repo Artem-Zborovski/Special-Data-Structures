@@ -1,0 +1,66 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+class Road {
+private:
+    vector<int> parent, size;
+    int comp;
+
+public:
+   Road(int n) {
+        parent.resize(n + 1);
+        size.resize(n + 1, 1);
+        comp = n;
+
+        for (int i = 1; i <= n; ++i)
+            parent[i] = i;
+    }
+
+    int find(int x) {
+        if (x != parent[x])
+            parent[x] = find(parent[x]); 
+        return parent[x];
+    }
+
+    void mergeComp(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if (rootX != rootY) {
+            
+            if (size[rootX] < size[rootY])
+                swap(rootX, rootY);
+
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+            --comp;
+        }
+    }
+
+    int getComp() const {
+        return comp;
+    }
+};
+
+int main() {
+    ifstream input("input.txt");
+    ofstream output("output.txt");
+
+    int n, q;
+    input >> n >> q;
+
+    Road road(n);
+
+    for (int i = 0; i < q; ++i) {
+        int u, v;
+        input >> u >> v;
+        road.mergeComp(u, v);
+        output << road.getComp() << '\n';
+    }
+
+    input.close();
+    output.close();
+
+    return 0;
+}
