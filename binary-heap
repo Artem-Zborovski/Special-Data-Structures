@@ -1,0 +1,38 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+int main() {
+    ifstream input("input.txt");
+    ofstream output("output.txt");
+    int n;
+    input >> n;
+    vector<int> arr(n);
+
+    for (int i = 0; i < n; i++) {
+        input>> arr[i];
+    }
+    bool isMH = true;
+    for (int i = 1; i <= n/2; i++) {
+        int left = 2 * i;
+        int right = 2 * i + 1;
+
+        if (left <= n && arr[i - 1] > arr[left - 1]) {
+            isMH = false;
+            break;
+        }
+
+        if (right <= n && arr[i - 1] > arr[right - 1]) {
+            isMH = false;
+            break;
+        }
+    }
+    output<< (isMH ? "Yes" : "No") << endl;
+
+    input.close();
+    output.close();
+    return 0;
+}
