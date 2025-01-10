@@ -1,0 +1,90 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <stack>
+using namespace std;
+
+class Road {
+private:
+    vector<int> parent, size;
+    int comp;
+
+public:
+    Road(int n) {
+        parent.resize(n + 1);
+        size.resize(n + 1, 1);
+        comp = n;
+        for (int i = 1; i <= n; ++i)
+            parent[i] = i;
+    }
+
+    int find(int x) {
+        if (x != parent[x])
+            parent[x] = find(parent[x]); 
+        return parent[x];
+    }
+
+    void mergeComp(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        if (rootX != rootY) {
+            if (size[rootX] < size[rootY])
+                swap(rootX, rootY);
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+            --comp;
+        }
+    }
+
+    int getComp() const {
+        return comp;
+    }
+};
+
+int main() {
+    ifstream input("input.txt");
+    ofstream output("output.txt");
+
+    int n, m, q;
+    input >> n >> m >> q;
+
+    vector<pair<int, int>> roads(m + 1);
+    vector<int>drop(q);          
+
+    for (int i = 1; i <= m; ++i) {
+        int u, v;
+        input >> u >> v;
+        roads[i] = {u, v};
+    }
+
+    for (int i = 0; i < q; ++i) {
+        input >> drop[i];
+    }
+
+    vector<bool> isRuined(m + 1, false); 
+    for (int x : drop) {
+        isRuined[x] = true;
+    }
+
+    Road road(n);
+    for (int i = 1; i <= m; ++i) {
+        if (!isRuined[i]) {
+            road.mergeComp(roads[i].first, roads[i].second);
+        }
+    }
+    vector<int> results(q);
+    for (int i = q - 1; i >= 0; --i) {
+        int roadIndex = drop[i];
+        results[i] = (road.getComp() == 1) ? 1 : 0;
+        road.mergeComp(roads[roadIndex].first, roads[roadIndex].second);
+    }
+    for (int res : results) {
+        output << res;
+    }
+    output << endl;
+
+    input.close();
+    output.close();
+
+    return 0;
+}
