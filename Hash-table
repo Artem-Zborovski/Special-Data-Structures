@@ -1,0 +1,36 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+int m, c, n;
+int func(int x, int i) {
+    return ((x % m) + (c * i)) % m;
+}
+int main() {
+    ifstream inputFile("input.txt");
+    ofstream outputFile("output.txt");
+    inputFile >> m >> c >> n;
+    vector<int> cells (m, -1);
+    for (int k = 0; k < n; ++k) {
+        int num;
+        inputFile >> num;
+        int i = 0;
+        while (i < m) {
+            int index = func(num, i);
+            if (cells[index] == -1 || cells[index] == num) {
+                cells[index] = num;
+                break;
+            }
+            i++;
+        }
+    }
+
+    inputFile.close();
+    for (int l = 0; l < m; ++l) {
+        outputFile << cells[l] << " ";
+    }
+    outputFile.close();
+    return 0;
+}
